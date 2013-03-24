@@ -1,0 +1,6 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use App::Uberwatch;
+
+my $app = App::Uberwatch->new->run;

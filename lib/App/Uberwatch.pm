@@ -1,39 +1,108 @@
+package App::Uberwatch;
+
+use 5.006;
+use strict;
+use warnings FATAL => 'all';
+
+use Moose;
+use YAML;
+use Proc::Daemon;
+
+=head1 NAME
+
 App::Uberwatch - server/process monitoring easy as...you know what
 
-INSTALLATION
+=head1 VERSION
 
-To install this module, run the following commands:
+Version 0.01
 
-	perl Makefile.PL
-	make
-	make test
-	make install
+=cut
 
-SUPPORT AND DOCUMENTATION
+our $VERSION = '0.01';
 
-After installing, you can find documentation for this module with the
-perldoc command.
+
+=head1 SYNOPSIS
+
+Quick summary of what the module does.
+
+Perhaps a little code snippet.
+
+    use App::Uberwatch;
+
+    my $foo = App::Uberwatch->new();
+    ...
+
+=head1 EXPORT
+
+A list of functions that can be exported.  You can delete this section
+if you don't export anything, such as for a purely object-oriented module.
+
+=head1 SUBROUTINES/METHODS
+
+=head2 run
+
+=cut
+has 'config' => (
+	is => 'rw',
+	isa => 'Path::Class::File'
+);
+
+=head2 function2
+
+=cut
+
+sub function2 {
+}
+
+=head1 AUTHOR
+
+Alexander Kluth, C<< <contact at alexanderkluth.com> >>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-app-uberwatch at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=App-Uberwatch>.  I will be notified, and then you'll
+automatically be notified of progress on your bug as I make changes.
+
+
+
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
 
     perldoc App::Uberwatch
 
+
 You can also look for information at:
 
-    RT, CPAN's request tracker (report bugs here)
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=App-Uberwatch
+=over 4
 
-    AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/App-Uberwatch
+=item * RT: CPAN's request tracker (report bugs here)
 
-    CPAN Ratings
-        http://cpanratings.perl.org/d/App-Uberwatch
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=App-Uberwatch>
 
-    Search CPAN
-        http://search.cpan.org/dist/App-Uberwatch/
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/App-Uberwatch>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/App-Uberwatch>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/App-Uberwatch/>
+
+=back
 
 
-LICENSE AND COPYRIGHT
+=head1 ACKNOWLEDGEMENTS
 
-Copyright (C) 2013 Alexander Kluth
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2013 Alexander Kluth.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a
@@ -71,3 +140,7 @@ CONTRIBUTOR WILL BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, OR
 CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
+=cut
+
+1; # End of App::Uberwatch
