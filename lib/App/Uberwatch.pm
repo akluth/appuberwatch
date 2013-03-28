@@ -5,8 +5,15 @@ use strict;
 use warnings FATAL => 'all';
 
 use Moose;
-use YAML;
+use YAML qw(LoadFile Dump);
 use Proc::Daemon;
+use Getopt::Long;
+use Parallel::ForkManager;
+use App::Uberwatch::Utils qw(warning success debug);
+
+my $no_daemon = '';
+
+
 
 =head1 NAME
 
@@ -37,21 +44,82 @@ Perhaps a little code snippet.
 A list of functions that can be exported.  You can delete this section
 if you don't export anything, such as for a purely object-oriented module.
 
+=head1 ATTRIBUTES
+
+=head2 config_file
+
+=cut
+
+has 'config_file' => (
+	is => 'rw',
+#	isa => 'Path::Class::File'
+	isa => 'Str',
+    default => "/etc/uberwatch.d/uberwatch.yml"
+);
+
+has 'config' => (
+    is => 'rw',
+);
+
+has 'pm' => (
+	is => 'rw'
+);
+
 =head1 SUBROUTINES/METHODS
 
 =head2 run
 
 =cut
-has 'config' => (
-	is => 'rw',
-	isa => 'Path::Class::File'
-);
+sub run {
+	my $self = shift;
+
+	GetOptions(
+		'no-daemon' => \$no_daemon
+	);
+
+	# Intialize fork manager
+	$self->pm(Parallel::ForkManager->new(30));
+
+    $self->config(LoadFile($self->config_file));
+
+    print 'Starting uberwatch...';
+
+	if ($no_daemon =~ '1') {
+        print "as a normal program, use CTRL+C to quit.\n";
+
+        #for ($self->config()[])
+        print Dump(\$self->config());
+
+	} else {
+        print "as a daemon.\n";
+
+		Proc::Daemon::Init;
+
+		my $continue = 1;
+
+		$SIG{TERM} = sub { $continue = 0 };
+
+		while ($continue) {
+
+		}
+	}
+}
+
 
 =head2 function2
 
 =cut
 
-sub function2 {
+sub monitor {
+	for (;;) {
+	    my $start = time;
+	    
+
+
+	    if ((my $remaining = 20 - (time - $start)) > 0) {
+	        sleep $remaining;
+	    }
+	}
 }
 
 =head1 AUTHOR
