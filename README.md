@@ -1,6 +1,8 @@
 App::Uberwatch - server/process monitoring easy as...you know what
+===========
 
 INSTALLATION
+----------------
 
 To install this module, run the following commands:
 
@@ -9,8 +11,48 @@ To install this module, run the following commands:
 	make test
 	make install
 
-SUPPORT AND DOCUMENTATION
+CONFIGURATION
+----------------
+Everything is configured via a simple, yet effective configuration file in the YAML format. You can specify the configuration file either at the command prompt via `--config=/path/to/config.yml` or you can use the system-wide configuration stored at `/etc/uberwatch/config.yml`.
 
+Here's a sample configuration setup for two hosts:
+
+	- 
+  	    host: mysuperduper.fancyhost.com
+	    interval: 10
+  	    methods: 
+    	    	ping: 
+       				method: tcp
+	 	      		timeout: 10
+  		logfile: /tmp/fancyhost.com.log
+	-
+		host: http://checkthis.hothost.de
+	  	interval: 5
+	  	methods:
+	    		http:
+			      	timeout: 60
+	  	logfile: /tmp/hothost.com.log
+
+The `interval` and `timeout` are defined as seconds. Per default uberwatch is only logging warnings and errors. For verbose logging (which may result in huge logfiles!) run uberwatch with the `--verbose` command.
+
+RUN
+----------------
+After installing and creating a config.yml file, you can run uberwatch from your command prompt:
+
+		uberwatch
+
+You can specify the configuration on the commandline:
+
+		uberwatch --config=/path/to/config.yml
+
+To enable verbose output in the logging files, use the `--verbose` switch:
+
+		uberwatch --verbose
+
+
+
+SUPPORT AND DOCUMENTATION
+------------------------
 After installing, you can find documentation for this module with the
 perldoc command.
 
