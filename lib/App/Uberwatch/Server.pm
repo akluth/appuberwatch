@@ -15,6 +15,10 @@ has 'config' => (
 	is => 'rw'
 );
 
+has 'log' => (
+    is => 'rw'
+);
+
 has 'ping' => (
 	is => 'rw'
 );
@@ -28,6 +32,7 @@ sub init {
     my $config = shift;
 
     $self->host($config->{'host'});
+    $self->log(Log::Handler->get_logger($self->host));
 
     $self->ping(
     	Net::Ping->new(
@@ -39,9 +44,9 @@ sub init {
     #TODO: HTTP
 }
 
-sub ping_ok {
+sub ping_server {
     my $self = shift;
-    $self->ping()->ping($self->host);
+    $self->log()->warning("Host " . $self->host . " is not reachable!") unless $self->ping()->ping($self->host);
 }
 
 

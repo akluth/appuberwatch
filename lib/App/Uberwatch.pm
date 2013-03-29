@@ -6,6 +6,7 @@ use warnings FATAL => 'all';
 
 use Moose;
 use YAML qw(LoadFile Dump);
+use Log::Handler;
 use Proc::Daemon;
 use Getopt::Long;
 use Parallel::ForkManager;
@@ -67,6 +68,10 @@ has 'pm' => (
 	is => 'rw'
 );
 
+has 'log' => (
+	is => 'rw'
+);
+
 has 'server' => (
 	is => 'rw'
 );
@@ -84,6 +89,7 @@ sub run {
 
     $self->config(LoadFile($self->config_file));
     my $config = $self->config();
+
     my $pm = new Parallel::ForkManager(scalar $config);
 
     for (my $i = 0; $i < scalar $config; $i++) {
@@ -91,6 +97,13 @@ sub run {
 
         $pm->start and next;
 
+        # Create log files for each host
+    	$self->log(Log::Handler->create_logger($config->[$i]->{'host'}));
+    	$self->log->add(
+    		file => {
+    			filename => $config->[$i]->{'logfile'}
+    		}
+    	);
         &monitor($config->[$i]);
 	}
 }
@@ -109,13 +122,11 @@ sub monitor {
     $server = App::Uberwatch::Server->new;
     $server->init($config);
 
-#    print Dumper($server);
-
 	for (;;) {
 	    my $start = time;
 
 	    if ((my $remaining = $config->{'interval'} - (time - $start)) > 0) {
-            $server->ping_ok;
+            $server->ping_server;
 	        sleep $remaining;
 	    }
 	}
