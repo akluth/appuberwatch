@@ -10,10 +10,12 @@ use Proc::Daemon;
 use Getopt::Long;
 use Parallel::ForkManager;
 use App::Uberwatch::Utils qw(warning success debug);
+use App::Uberwatch::Server;
 
-my $no_daemon = '';
 
+$| = 1;
 
+my $server;
 
 =head1 NAME
 
@@ -65,62 +67,61 @@ has 'pm' => (
 	is => 'rw'
 );
 
+has 'server' => (
+	is => 'rw'
+);
+
 =head1 SUBROUTINES/METHODS
 
 =head2 run
 
+Main method, creates a fork for every server/process to be monitored
+
 =cut
 sub run {
 	my $self = shift;
-
-	GetOptions(
-		'no-daemon' => \$no_daemon
-	);
-
-	# Intialize fork manager
-	$self->pm(Parallel::ForkManager->new(30));
+    my @thread;
 
     $self->config(LoadFile($self->config_file));
+    my $config = $self->config();
+    my $pm = new Parallel::ForkManager(scalar $config);
 
-    print 'Starting uberwatch...';
+    for (my $i = 0; $i < scalar $config; $i++) {
+        print $config->[$i]->{'host'} . "\n";
 
-	if ($no_daemon =~ '1') {
-        print "as a normal program, use CTRL+C to quit.\n";
+        $pm->start and next;
 
-        #for ($self->config()[])
-        print Dump(\$self->config());
-
-	} else {
-        print "as a daemon.\n";
-
-		Proc::Daemon::Init;
-
-		my $continue = 1;
-
-		$SIG{TERM} = sub { $continue = 0 };
-
-		while ($continue) {
-
-		}
+        &monitor($config->[$i]);
 	}
 }
 
 
-=head2 function2
+=head2 monitor
+
+The main monitoring function, checks every n seconds the specified server
+with the specified methods
 
 =cut
 
 sub monitor {
+    my $config = shift;
+
+    $server = App::Uberwatch::Server->new;
+    $server->init($config);
+
+#    print Dumper($server);
+
 	for (;;) {
 	    my $start = time;
-	    
 
-
-	    if ((my $remaining = 20 - (time - $start)) > 0) {
+	    if ((my $remaining = $config->{'interval'} - (time - $start)) > 0) {
+            $server->ping_ok;
 	        sleep $remaining;
 	    }
 	}
 }
+
+
 
 =head1 AUTHOR
 
