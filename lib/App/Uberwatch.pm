@@ -10,12 +10,13 @@ use Log::Handler;
 use Proc::Daemon;
 use Getopt::Long;
 use Parallel::ForkManager;
-use App::Uberwatch::Utils qw(warning success debug);
+use App::Uberwatch::Utils;
 use App::Uberwatch::Server;
-
 
 $| = 1;
 
+my $debug = '';
+my $verbose = '';
 my $server;
 
 =head1 NAME
@@ -76,6 +77,10 @@ has 'server' => (
 	is => 'rw'
 );
 
+has 'utils' => (
+    is => 'rw'
+);
+
 =head1 SUBROUTINES/METHODS
 
 =head2 run
@@ -87,24 +92,39 @@ sub run {
 	my $self = shift;
     my @thread;
 
+    GetOptions(
+        'debug' => \$debug,
+        'verbose' => \$verbose
+    );
+
+    $self->utils(App::Uberwatch::Utils->new(debugmode => $debug, verbosemode => $verbose));
+
+    $self->utils->warning("Verbose mode activated, logging everything!\n") if ($verbose =~ '1');
+
     $self->config(LoadFile($self->config_file));
     my $config = $self->config();
 
+    # Create the ForkManager with only as much forks as hosts defined in
+    # the config file
     my $pm = new Parallel::ForkManager(scalar $config);
 
     for (my $i = 0; $i < scalar $config; $i++) {
-        print $config->[$i]->{'host'} . "\n";
+        $self->utils->debug($config->[$i]->{'host'} . "\n");
 
         $pm->start and next;
 
         # Create log files for each host
-    	$self->log(Log::Handler->create_logger($config->[$i]->{'host'}));
-    	$self->log->add(
-    		file => {
-    			filename => $config->[$i]->{'logfile'}
-    		}
-    	);
-        &monitor($config->[$i]);
+        $self->log(Log::Handler->create_logger($config->[$i]->{'host'}));
+        $self->log->add(
+            file => {
+                filename => $config->[$i]->{'logfile'},
+                minlevel => 'emergency',
+                maxlevel => 'debug'
+            }
+        );
+
+        # Start the monitoring process
+        &monitor($self, $config->[$i]);
 	}
 }
 
@@ -117,21 +137,22 @@ with the specified methods
 =cut
 
 sub monitor {
+    my $self = shift;
     my $config = shift;
 
-    $server = App::Uberwatch::Server->new;
+    $server = App::Uberwatch::Server->new(verbosemode => $verbose);
     $server->init($config);
 
 	for (;;) {
 	    my $start = time;
 
 	    if ((my $remaining = $config->{'interval'} - (time - $start)) > 0) {
-            $server->ping_server;
+            $server->ping_server if defined $config->{'methods'}->{'ping'};
+            $server->http_server if defined $config->{'methods'}->{'http'};
 	        sleep $remaining;
 	    }
 	}
 }
-
 
 
 =head1 AUTHOR

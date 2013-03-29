@@ -2,43 +2,78 @@ package App::Uberwatch::Utils;
 
 use strict;
 use warnings;
+use Moose;
 
-use Exporter::Easy (
-    OK => [ qw(error warning success debug slurp blargl) ]
-);
-
+use Log::Handler;
 use Term::ANSIColor qw(:constants);
 $Term::ANSIColor::AUTORESET = 1;
 
+
+has 'debugmode' => (
+    is => 'rw'
+);
+
+has 'verbosemode' => (
+    is => 'rw'
+);
+
+
+sub info {
+    my $self = shift;
+    my $str = shift;
+
+    print WHITE $str;
+}
+
 sub error {
-    print BOLD RED $_[0];
+    my $self = shift;
+    my $str = shift;
+
+    print BOLD RED $str;
 }
 
 sub warning {
-    print BOLD YELLOW $_[0];
+    my $self = shift;
+    my $str = shift;
+
+    print BOLD YELLOW $str;
 }
 
 sub success {
-    print BOLD GREEN $_[0];
+    my $self = shift;
+    my $str = shift;
+
+    print BOLD GREEN $str;
 }
 
 sub debug {
-    #  unless ($DEBUG !~ 1) {
-    #    print YELLOW $_[0];
-    #}
+    my $self = shift;
+    my $str = shift;
+
+    unless ($self->debugmode !~ '1') {
+        print YELLOW $str;
+    }
 }
 
 sub slurp {
-    open(HANDLE, '<', $_[0]);
+    my $self = shift;
+    my $file = shift;
+
+    open(HANDLE, '<', $file);
     my $tmp = do { local $/ = <HANDLE> };
     close(HANDLE);
     return $tmp;
 }
 
 sub blargl {
-    open(HANDLE, '>', $_[0]);
-    print HANDLE $_[1];
+    my $self = shift;
+    my $file = shift;
+    my $content = shift;
+
+    open(HANDLE, '>', $file);
+    print HANDLE $content;
     close(HANDLE);
 }
 
-1;
+no Moose;
+__PACKAGE__->meta->make_immutable;

@@ -5,6 +5,8 @@ use warnings;
 use Moose;
 use Net::Ping;
 use Log::Handler;
+use LWP::UserAgent;
+use App::Uberwatch::Utils;
 
 has 'host' => (
 	is => 'rw',
@@ -13,6 +15,10 @@ has 'host' => (
 
 has 'config' => (
 	is => 'rw'
+);
+
+has 'verbosemode' => (
+    is => 'rw'
 );
 
 has 'log' => (
@@ -35,22 +41,34 @@ sub init {
     $self->log(Log::Handler->get_logger($self->host));
 
     $self->ping(
-    	Net::Ping->new(
-    		$config->{'methods'}->{'ping'}->{'method'},
-    		$config->{'methods'}->{'ping'}->{'timeout'}
-    	)
+        Net::Ping->new(
+            $config->{'methods'}->{'ping'}->{'method'},
+            $config->{'methods'}->{'ping'}->{'timeout'}
+        )
     ) if (defined $config->{'methods'}->{'ping'});
 
-    #TODO: HTTP
+    $self->http(
+        LWP::UserAgent->new(
+            timeout => $config->{'methods'}->{'http'}->{'timeout'}
+        )
+    ) if (defined $config->{'methods'}->{'http'});
 }
 
 sub ping_server {
     my $self = shift;
-    $self->log()->warning("Host " . $self->host . " is not reachable!") unless $self->ping()->ping($self->host);
+
+    $self->log->info("Pinging " . $self->host . "...") if ($self->verbosemode =~ '1');
+    print "lol wat from  " . $self->host if ($self->verbosemode =~ '1');
+
+    $self->log->warning("Host " . $self->host . " is not reachable!") unless $self->ping()->ping($self->host);
 }
 
-
 sub http_server {
+    my $self = shift;
+
+    $self->log->info("Trying a HTTP request on " . $self->host . "...") if ($self->verbosemode =~ '1');
+    my $response = $self->http->get($self->host);
+    $self->log->error("Host " . $self->host . " returned HTTP status " . $response->code()) unless $response->code() eq 200;
 }
 
 no Moose;
