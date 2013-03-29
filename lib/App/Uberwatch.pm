@@ -108,7 +108,7 @@ sub run {
     # the config file
     my $pm = new Parallel::ForkManager(scalar $config);
 
-    for (my $i = 0; $i < scalar $config; $i++) {
+    for (my $i = 0; $i < scalar @{$config}; $i++) {
         $self->utils->debug($config->[$i]->{'host'} . "\n");
 
         $pm->start and next;

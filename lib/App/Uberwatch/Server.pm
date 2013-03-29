@@ -58,7 +58,6 @@ sub ping_server {
     my $self = shift;
 
     $self->log->info("Pinging " . $self->host . "...") if ($self->verbosemode =~ '1');
-    print "lol wat from  " . $self->host if ($self->verbosemode =~ '1');
 
     $self->log->warning("Host " . $self->host . " is not reachable!") unless $self->ping()->ping($self->host);
 }
@@ -67,8 +66,10 @@ sub http_server {
     my $self = shift;
 
     $self->log->info("Trying a HTTP request on " . $self->host . "...") if ($self->verbosemode =~ '1');
-    my $response = $self->http->get($self->host);
+    my $response = $self->http->get("http://" . $self->host);
     $self->log->error("Host " . $self->host . " returned HTTP status " . $response->code()) unless $response->code() eq 200;
+
+    $self->log->info("Successful HTTP request on " . $self->host . " with status " . $response->code()) if ($self->verbosemode =~ '1');
 }
 
 no Moose;
