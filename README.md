@@ -1,6 +1,13 @@
 App::Uberwatch - server/process monitoring easy as...you know what
 ===========
 
+ABOUT
+----------------
+App::Uberwatch is a simple yet effective server/process monitoring tool which aims to be extremely easy to setup and configure. All you want to do is to write a simple config file in the YAML format and you're ready to monitor your servers.
+
+
+Info: App::Uberwatch is in an early stadium, it's ready to use but still buggy and the code (especially the Moose parts) needs some improvements.
+
 INSTALLATION
 ----------------
 
