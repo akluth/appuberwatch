@@ -15,6 +15,7 @@ use App::Uberwatch::Server;
 
 $| = 1;
 
+my $config = '';
 my $debug = '';
 my $verbose = '';
 my $server;
@@ -93,16 +94,20 @@ sub run {
     my @thread;
 
     GetOptions(
+        'config=s', \$config,
         'debug' => \$debug,
         'verbose' => \$verbose
     );
 
-    $self->utils(App::Uberwatch::Utils->new(debugmode => $debug, verbosemode => $verbose));
+    $self->config_file($config) if ($config !~ '');
 
-    $self->utils->warning("Verbose mode activated, logging everything!\n") if ($verbose =~ '1');
+    confess "Config file " . $self->config_file . " does not exists!" if (! -e $self->config_file);
 
     $self->config(LoadFile($self->config_file));
     my $config = $self->config();
+
+    $self->utils(App::Uberwatch::Utils->new(debugmode => $debug, verbosemode => $verbose));
+    $self->utils->warning("Verbose mode activated, logging everything!\n") if ($verbose =~ '1');
 
     # Create the ForkManager with only as much forks as hosts defined in
     # the config file

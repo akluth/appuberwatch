@@ -3,5 +3,4 @@ use strict;
 use warnings;
 use App::Uberwatch;
 
-my $app = App::Uberwatch->new(config_file => '/home/alexander/config.yml')->run;
-#my $app = App::Uberwatch->new->run;
+my $app = App::Uberwatch->new->run;
