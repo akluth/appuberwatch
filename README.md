@@ -33,7 +33,7 @@ Here's a sample configuration setup for two hosts:
 	 	      		timeout: 10
   		logfile: /tmp/fancyhost.com.log
 	-
-		host: http://checkthis.hothost.de
+		host: checkthis.hothost.de
 	  	interval: 5
 	  	methods:
 	    		http:
