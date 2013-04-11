@@ -16,6 +16,14 @@ WriteMakefile(
     },
     BUILD_REQUIRES => {
         'Test::More' => 0,
+        'Moose' => 0,
+        'YAML' => 0,
+        'Log::Handler' => 0,
+        'Proc::Daemon' => 0,
+        'Getopt::Long' => 0,
+        'Parallel::ForkManager' => 0,
+        'App::Uberwatch::Utils' => 0,
+        'App::Uberwatch::Server' => 0,
     },
     PREREQ_PM => {
         #'ABC'              => 1.6,
