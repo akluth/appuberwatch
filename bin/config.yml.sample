@@ -1,0 +1,19 @@
+- 
+     host: mysuperduper.fancyhost.com
+     interval: 10
+     methods: 
+        ping: 
+            method: tcp
+            timeout: 10
+     logfile: /tmp/fancyhost.com.log
+     watcher:
+        nagios:
+            host: nagios.fancyhost.com
+            service: MySuperDuperService
+-
+     host: checkthis.hothost.de
+     interval: 5
+     methods:
+        http:
+            timeout: 60
+     logfile: /tmp/hothost.com.log

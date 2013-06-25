@@ -59,7 +59,7 @@ has 'config_file' => (
 	is => 'rw',
 #	isa => 'Path::Class::File'
 	isa => 'Str',
-    default => "/etc/uberwatch.d/uberwatch.yml"
+    default => "./config.yml"
 );
 
 has 'config' => (

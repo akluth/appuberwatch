@@ -4,20 +4,44 @@ use strict;
 use warnings;
 use Moose;
 use Net::SMTP;
+use App::Uberwatch::Nagios;
 
 has 'mail' => (
-	is => 'rw'
+    is => 'rw'
 );
 
+has 'nagios' => (
+    is => 'rw'
+);
+
+
 sub init {
-	$self = shift;
+	my $self = shift;
+    my $config = shift;
 
-	$self->mail(Net::SMTP->new('localhost'));
+	$self->nagios(
+        App::Uberwatch::Nagios->new($config)
+    ) if defined ($config->{'nagios'});
 }
 
-sub inform_admins {
 
+sub critical {
+    my $self = shift;
+    my $msg = shift;
+
+    $self->send($msg);
 }
+
+
+sub send {
+    my $self = shift;
+    my $msg = shift;
+
+    if ($self->nagios != 0) {
+        $self->nagios->send_nsca($msg);
+    }
+}
+
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
