@@ -19,9 +19,12 @@ sub init {
 	my $self = shift;
     my $config = shift;
 
-	$self->nagios(
-        App::Uberwatch::Nagios->new($config)
-    ) if defined ($config->{'nagios'});
+    if (defined $config->{'nagios'}) {
+    	$self->nagios(
+            App::Uberwatch::Nagios->new
+        );
+        $self->nagios->init($config->{'nagios'});
+    }
 }
 
 
@@ -29,17 +32,7 @@ sub critical {
     my $self = shift;
     my $msg = shift;
 
-    $self->send($msg);
-}
-
-
-sub send {
-    my $self = shift;
-    my $msg = shift;
-
-    if ($self->nagios != 0) {
-        $self->nagios->send_nsca($msg);
-    }
+    $self->nagios->send_nsca($msg);
 }
 
 

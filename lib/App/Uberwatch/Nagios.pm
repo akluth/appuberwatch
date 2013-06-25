@@ -27,9 +27,9 @@ sub init {
     my $self = shift;
     my $config = shift;
 
-    $self->host($config->{'host'});
-    $self->remotehost($config->{'watcher'}->{'nagios'}->{'host'});
-    $self->service($config->{'watcher'}->{'nagios'}->{'host'});
+    $self->host('localhost');
+    $self->remotehost($config->{'host'});
+    $self->service($config->{'host'});
     $self->nsca(Net::NSCA::Client->new(
         remote_host => $self->host
     ));

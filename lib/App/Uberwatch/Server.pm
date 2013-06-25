@@ -60,7 +60,8 @@ sub init {
         )
     ) if (defined $config->{'methods'}->{'http'});
 
-    $self->watcher(App::Uberwatch::Watcher->new($config->{'watcher'}));
+    $self->watcher(App::Uberwatch::Watcher->new);
+    $self->watcher->init($config->{'watcher'});
 }
 
 

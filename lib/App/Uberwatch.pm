@@ -106,7 +106,10 @@ sub run {
     $self->config(LoadFile($self->config_file));
     my $config = $self->config();
 
-    $self->utils(App::Uberwatch::Utils->new(debugmode => $debug, verbosemode => $verbose));
+    $self->utils(App::Uberwatch::Utils->new(
+            debugmode => $debug, 
+            verbosemode => $verbose)
+    );
     $self->utils->warning("Verbose mode activated, logging everything!\n") if ($verbose =~ '1');
 
     # Create the ForkManager with only as much forks as hosts defined in
